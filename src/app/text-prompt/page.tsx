@@ -12,24 +12,34 @@ type Props = {}
 const TextPrompt = (props: Props) => {
     const [loading, setLoading] = useState(false);
     const [prompt, setPrompt] = useState('');
-    const [response, setResponse] = useState([]);
+    const [response, setResponse] = useState<string[]>([]);
 
     const handleSubmit = async () => {
-        setLoading(true);
-        console.log(process.env.NEXT_PUBLIC_SERVER_URL);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/text/submit-prompt`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: prompt
-            })
-        });
-        const data = await response.json();
-        setResponse(data.response);
-        setLoading(false);
-        console.log(data);
+        try {
+            setResponse([]);
+            setLoading(true);
+            console.log(process.env.NEXT_PUBLIC_SERVER_URL);
+            const result = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/text/submit-prompt`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt
+                })
+            });
+            const { success, response, message } = await result.json();
+            console.log({success, response, message})
+            if (!success) {
+                throw new Error(message);
+            }
+            setResponse(response);
+        } catch (error: any) {
+            setResponse(['Something went wrong'])
+        } finally {
+            setPrompt('')
+            setLoading(false);
+        }
     };
 
     return (
@@ -44,12 +54,21 @@ const TextPrompt = (props: Props) => {
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                     />
-                    {loading ? (
-                        <Button className='max-content my-5'  disabled>
+
+                    {prompt.length === 0 && (
+                        <Button disabled className='max-content my-5 block' onClick={handleSubmit}>
+                            {"Submit Prompt"}
+                        </Button>
+                    )}
+
+                    {loading && (
+                        <Button className='max-content my-5' disabled>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             {"Please wait"}
                         </Button>
-                    ) : (
+                    )}
+
+                    {(prompt.length > 0 && !loading) && (
                         <Button className='max-content my-5 block' onClick={handleSubmit}>
                             {"Submit Prompt"}
                         </Button>
@@ -58,7 +77,7 @@ const TextPrompt = (props: Props) => {
 
                 {response.length > 0 && (
                     <div className='w-4/5 mx-auto'>
-                        <h1 className='text-accent-foreground'>Response:</h1>
+                        <h1 className='text-primary text-2xl uppercase'>Response</h1>
                         <div>{response.map((item, index) => {
                             return <p key={index}>{item}</p>
                         })}</div>
