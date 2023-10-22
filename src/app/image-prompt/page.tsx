@@ -32,7 +32,7 @@ const ImagePrompt = (props: Props) => {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-20">
+        <div className="max-w-4xl mx-auto px-20">
             <h1 className='text-center text-3xl my-5'>Generate Captions for Images!</h1>
             <label htmlFor="">Browse Image</label>
             <div className='flex space-x-4'>
@@ -62,13 +62,14 @@ const ImagePrompt = (props: Props) => {
                     }}
                 >{"X"}</Button>)}
             </div>
-            <div className='min-content aspect-video rounded flex items-center justify-center border-2 border-dashed cursor-pointer mx-auto my-4'>
-                {selectedImage ? (
-                    <img src={selectedImage} alt='' />
-                ) : (
-                    <span>Select Image</span>
-                )}
-            </div>
+            {selectedImage.length > 0 &&
+                <div className='min-content aspect-video rounded flex items-center justify-center border-2 border-dashed cursor-pointer mx-auto my-4'>
+                    {selectedImage ? (
+                        <img src={selectedImage} alt='' />
+                    ) : (
+                        <span>{"Image Preview"}</span>
+                    )}
+                </div>}
 
             {selectedImage.length === 0 && (
                 <Button disabled className='max-content my-5 block' onClick={handleSubmit}>
@@ -88,9 +89,6 @@ const ImagePrompt = (props: Props) => {
                     {"Generate Caption"}
                 </Button>
             )}
-
-
-
         </div>
     )
 }
