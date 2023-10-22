@@ -19,7 +19,7 @@ const TextPrompt = (props: Props) => {
             setResponse([]);
             setLoading(true);
             console.log(process.env.NEXT_PUBLIC_SERVER_URL);
-            const result = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/text/submit-prompt`, {
+            const result = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/text/submit-prompt`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
